@@ -236,3 +236,37 @@ class CNF:
         else:
             cert = {}
         return cert
+
+    def solve_glucose(self):
+        """
+        Solve using Glucose3
+
+        Returns
+        -------
+        cert: dictionary
+            key: variable name, value: [False/True] 
+            Or an empty dictionary if it is not satisfiable
+        """
+        from pysat.solvers import Glucose3
+        ## Step 1: Convert into pysat form
+        vars = list(self.vars)
+        var2idx = {var:i+1 for i, var in enumerate(vars)}
+        formula = Glucose3()
+        for clause in self.clauses:
+            gclause = []
+            for [var, val] in clause:
+                idx = var2idx[var]
+                if not val:
+                    idx *= -1
+                gclause.append(idx)
+            formula.add_clause(gclause)
+        ## Step 2: Call pysat solver and extract solution
+        cert = {}
+        if formula.solve():
+            for idx in formula.get_model():
+                val = True
+                if idx < 0:
+                    idx *= -1
+                    val = False
+                cert[vars[idx-1]] = val
+        return cert
