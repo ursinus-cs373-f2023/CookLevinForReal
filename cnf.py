@@ -65,16 +65,13 @@ class CNF:
         True if this certificate satisfies the CNF
         False otherwise
         """
-        is_satisfied = True
-        i = 0
-        while is_satisfied and i < len(self.clauses):
-            clause = self.clauses[i]
+        for clause in self.clauses:
             at_least_one = False
             for (var, val) in clause:
                 at_least_one = at_least_one or (val == cert[var])
-            is_satisfied = is_satisfied and at_least_one
-            i += 1
-        return is_satisfied
+            if not at_least_one:
+                return False
+        return True
 
     def _solve_brute(self, idx, cert, vars):
         """
