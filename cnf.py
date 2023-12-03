@@ -10,7 +10,7 @@ class CNF:
         self.vars = set([])
         
     def __repr__(self):
-        return " ^ ".join(["(" + " V ".join([["¬",""][int(val)]+var for (var, val) in clause]) + ")" for clause in self.clauses])
+        return " ^ ".join(["(" + " V ".join([["¬",""][int(val)]+"{}".format(var) for (var, val) in clause]) + ")" for clause in self.clauses])
 
     def add_clause(self, clause):
         """
@@ -240,6 +240,7 @@ class CNF:
     def solve_glucose(self):
         """
         Solve using Glucose3
+        pip install python-sat
 
         Returns
         -------
@@ -270,3 +271,14 @@ class CNF:
                     val = False
                 cert[vars[idx-1]] = val
         return cert
+    
+
+# (x0 V not x1 V x2) ^ (x0 V x1 V x2) ^ (not x0 V not x1 V not x2) ^ (not x0)
+cnf = CNF()
+cnf.add_clause([("x0", True), ("x1", False), ("x2", True)])
+cnf.add_clause([("x0", True), ("x1", True), ("x2", True)])
+cnf.add_clause([("x0", False), ("x1", False), ("x2", False)])
+cnf.add_clause([("x0", False)])
+cnf.add_clause([("x0", True)])
+cert = cnf.solve()
+print(cert)
