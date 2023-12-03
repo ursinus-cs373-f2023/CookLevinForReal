@@ -272,13 +272,3 @@ class CNF:
                 cert[vars[idx-1]] = val
         return cert
     
-
-# (x0 V not x1 V x2) ^ (x0 V x1 V x2) ^ (not x0 V not x1 V not x2) ^ (not x0)
-cnf = CNF()
-cnf.add_clause([("x0", True), ("x1", False), ("x2", True)])
-cnf.add_clause([("x0", True), ("x1", True), ("x2", True)])
-cnf.add_clause([("x0", False), ("x1", False), ("x2", False)])
-cnf.add_clause([("x0", False)])
-cnf.add_clause([("x0", True)])
-cert = cnf.solve()
-print(cert)
