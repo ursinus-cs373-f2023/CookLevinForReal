@@ -23,7 +23,8 @@ class CNF:
             (variable name, [False/True])
         """
         self.clauses.append([(c[0], c[1]) for c in clause]) # Clone the clause
-        self.vars = self.vars.union(set(c[0] for c in clause))
+        for c in clause:
+            self.vars.add(c[0])
 
     def init_random_cnf(self, n_literals, n_clauses, seed=0):
         """
