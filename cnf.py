@@ -238,6 +238,30 @@ class CNF:
             cert = {}
         return cert
 
+    def _get_glucose_encoded(self):
+        """
+        Convert the clauses into Glucose format, where each variable
+        is a zero-indexed int that shows up with a negative sign
+        if it is negated
+
+        Returns
+        -------
+        list of list
+            Glucose encoded clauses
+        """
+        vars = list(self.vars)
+        var2idx = {var:i+1 for i, var in enumerate(vars)}
+        clauses = []
+        for clause in self.clauses:
+            gclause = []
+            for [var, val] in clause:
+                idx = var2idx[var]
+                if not val:
+                    idx *= -1
+                gclause.append(idx)
+            clauses.append(gclause)
+        return clauses
+
     def solve_glucose(self):
         """
         Solve using Glucose3
@@ -252,15 +276,8 @@ class CNF:
         from pysat.solvers import Glucose3
         ## Step 1: Convert into pysat form
         vars = list(self.vars)
-        var2idx = {var:i+1 for i, var in enumerate(vars)}
         formula = Glucose3()
-        for clause in self.clauses:
-            gclause = []
-            for [var, val] in clause:
-                idx = var2idx[var]
-                if not val:
-                    idx *= -1
-                gclause.append(idx)
+        for gclause in self._get_glucose_encoded():
             formula.add_clause(gclause)
         ## Step 2: Call pysat solver and extract solution
         cert = {}
@@ -273,3 +290,15 @@ class CNF:
                 cert[vars[idx-1]] = val
         return cert
     
+    def save(self, filename):
+        """
+        Write this CNF formula to disk
+
+        Parameters
+        ----------
+        filename: string
+            Path to file to which to write this CNF formula
+        """
+        import pickle
+        with open(filename, "wb") as fout:
+            pickle.dump(self.clauses, fout)
