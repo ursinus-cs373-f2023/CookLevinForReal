@@ -57,15 +57,26 @@ class Graph:
         y = np.sin(theta)
         plt.scatter(x, y, s=100, zorder=100)
         for i in range(V):
-            plt.text(x[i]+0.05, y[i], "{}".format(i))
+            plt.text(x[i]*1.1-0.02, y[i]*1.1-0.05, "{}".format(i))
         ## Draw each edge
         for (i, j) in self.edges:
-            plt.plot([x[i], x[j]], [y[i], y[j]], c='k', linewidth=4)
+            plt.plot([x[i], x[j]], [y[i], y[j]], c='k', linewidth=3)
         ## Draw the certificate permutation
         for k in range(len(perm)):
             i = perm[k]
             j = perm[(k+1)%V]
-            plt.plot([x[i], x[j]], [y[i], y[j]], c='C1', linestyle='--')
+            plt.plot([x[i], x[j]], [y[i], y[j]], c='C1', linestyle='--', linewidth=1)
+        if len(perm) > 0:
+            chunk_size = 20
+            s = ""
+            for k in range(0, len(perm), chunk_size):
+                for i in range(min(chunk_size, len(perm)-k)):
+                    s += "{}".format(perm[k+i])
+                    if k+i < len(perm)-1:
+                        s += ","
+                s += "\n"
+            plt.title(s)
+        plt.axis("off")
 
     def get_at_most_one(self, cnf):
         """
